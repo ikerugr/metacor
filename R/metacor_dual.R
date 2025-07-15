@@ -17,10 +17,9 @@
 #' @param custom_sd_diff_int List with elements 'row' and 'value' for manual sd_diff_int values.
 #' @param custom_sd_diff_con List with elements 'row' and 'value' for manual sd_diff_con values.
 #' @param single_group Logical. Is the design single-group only? (default: FALSE)
-#'
 #' @return Data frame with calculated variables. Optionally, a Word report ('imputation_report.docx') is generated.
 #' @export
-#'#' @importFrom stats qt
+#' @importFrom stats qt
 #' @importFrom stringr str_match str_detect
 #' @importFrom officer read_docx body_add_fpar body_add_par fpar ftext fp_text
 #' @examples
@@ -28,9 +27,6 @@
 #' @references
 #' Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page, M. J., & Welch, V. A. (Eds.). (2023). Cochrane handbook for systematic reviews of interventions (Version 6.3). Cochrane. https://training.cochrane.org/handbook
 #' Fu, R., Vandermeer, B.W., Shamliyan, T.A., O’Neil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. AHRQ Publication No. 13-EHC103-EF. https://effectivehealthcare.ahrq.gov/reports/final.cfm
-
-
-
 metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
                          apply_hedges = TRUE, SMD_method = "SMDpre", MeanDifferences = FALSE,
                          impute_method = "none", verbose = TRUE, report_imputations = FALSE,
@@ -501,8 +497,6 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   if (!is.null(report_imputations) && isTRUE(report_imputations)) {
     if (!requireNamespace("officer", quietly = TRUE)) stop("Package 'officer' is required.")
     if (!requireNamespace("stringr", quietly = TRUE)) stop("Package 'stringr' is required.")
-    library(officer)
-    library(stringr)
 
     style_normal <- fp_text(font.size = 12, font.family = "Times New Roman")
     style_bold <- fp_text(font.size = 12, font.family = "Times New Roman", bold = TRUE)
