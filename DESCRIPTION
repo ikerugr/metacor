@@ -8,7 +8,7 @@ Authors@R: C(person(given = c("Iker", "J."),
                   email = "ikerugr@gmail.com"),
              person(given = c("Saul"),
                   family = "Martínez-Rodríguez",
-                  role = c("aut"),
+                  role = c("ctb"),
                   email = "saulmrguez@gmail.com")
 Maintainer: Iker J. Bautista <ikerugr@gmail.com>
 Description: Tools for the calculation of effect sizes (SMD, mean difference) in pre-post controlled studies, including robust imputation of missing variances and correlations.
