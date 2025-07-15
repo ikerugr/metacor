@@ -13,7 +13,3 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(metacor)
-
-metacor: Meta-analysis with Correlated Data
-
-metacor is an R package designed to facilitate the calculation of effect sizes and imputation of missing values in studies with pre-post and intervention-control designs. It offers robust handling of missing correlations, standard deviations, and generates a detailed report for reproducibility.
