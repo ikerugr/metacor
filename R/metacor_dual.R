@@ -54,7 +54,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   }
 
   # -------------------------
-  ### BLOQUE: Inicialización de vectores
+  ### BLOQUE: Inicializacion de vectores
   # -------------------------
   r_int <- numeric(nrow(df))
   r_con <- numeric(nrow(df))
@@ -113,7 +113,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
             sprintf("sd_diff_int (manual: %.4f)", val)
           ))
         }
-        # r_int se calculará después al usar este sd_diff_int, así que el log de r_int se pone en el segundo bucle
+        # r_int se calculara despues al usar este sd_diff_int, así que el log de r_int se pone en el segundo bucle
       }
     }
   }
@@ -195,7 +195,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   # -------------------------
   # BLOQUE: Calcular máximos para imputar (para 'direct')
   # -------------------------
-  # Calcular máximos para imputación "direct" sólo si hay datos conocidos
+  # Calcular máximos para imputacion "direct" solo si hay datos conocidos
   sd_diff_int_max <- if (any(!is.na(sd_diff_int))) max(sd_diff_int, na.rm = TRUE) else NA_real_
   sd_diff_con_max <- if (any(!is.na(sd_diff_con))) max(sd_diff_con, na.rm = TRUE) else NA_real_
 
@@ -203,13 +203,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   if (is.na(sd_diff_con_max)) warning("No real SD diff values available to impute (con).")
 
   # -------------------------
-  # SEGUNDO BUCLE: Imputación de los NA con recálculo y warnings de rango r
+  # SEGUNDO BUCLE: Imputacion de los NA con recalculo y warnings de rango r
   # -------------------------
   for (i in seq_len(nrow(df))) {
     imputado_int <- FALSE
     imputado_con <- FALSE
 
-    # IMPUTACIÓN INTERVENCIÓN
+    # IMPUTACIÓN INTERVENCION
     if (is.na(sd_diff_int[i])) {
       if (impute_method == "direct") {
         if (!is.na(sd_diff_int_max) && is.finite(sd_diff_int_max)) {
@@ -273,7 +273,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       }
     }
 
-    # IMPUTACIÓN MANUAL INTERVENCIÓN (custom_sd_diff_int)
+    # IMPUTACIÓN MANUAL INTERVENCION (custom_sd_diff_int)
     if (!is.na(sd_diff_int[i]) && !is.null(custom_sd_diff_int)) {
       custom_rows <- sapply(custom_sd_diff_int, function(entry) entry$row)
       if (i %in% custom_rows) {
@@ -292,7 +292,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       }
     }
 
-    # Imputación y recalculo para CONTROL
+    # Imputacion y recalculo para CONTROL
     if (!single_group && is.na(sd_diff_con[i])) {
       if (impute_method == "direct") {
         if (!is.na(sd_diff_con_max) && is.finite(sd_diff_con_max)) {
@@ -355,7 +355,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       }
     }
 
-    # IMPUTACIÓN MANUAL CONTROL (custom_sd_diff_con)
+    # IMPUTACION MANUAL CONTROL (custom_sd_diff_con)
     if (!single_group && !is.na(sd_diff_con[i]) && !is.null(custom_sd_diff_con)) {
       custom_rows_con <- sapply(custom_sd_diff_con, function(entry) entry$row)
       if (i %in% custom_rows_con) {
@@ -381,13 +381,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   for (i in seq_len(nrow(df))) {
 
     # -------------------------
-    ### BLOQUE: Cálculo del factor de corrección de Hedges
+    ### BLOQUE: Calculo del factor de correccian de Hedges
     # -------------------------
     J_int <- if (apply_hedges) 1 - (3 / (4 * (df$n_Int[i] - 1) - 1)) else 1
     J_con <- if (apply_hedges) 1 - (3 / (4 * (df$n_Con[i] - 1) - 1)) else 1
 
     # -------------------------
-    ### BLOQUE: Cálculo de tamaños del efecto (SMDs)
+    ### BLOQUE: Calculo de tamaños del efecto (SMDs)
     # -------------------------
     if (SMD_method == "SMDpre") {
       SMDpre_int[i] <- J_int * (meanDiff_int[i] / df$sd_pre_Int[i])
@@ -461,13 +461,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     }
 
     # -------------------------
-    ### BLOQUE: Cálculo del porcentaje de cambio
+    ### BLOQUE: Calculo del porcentaje de cambio
     # -------------------------
     pct_change_int[i] <- (meanDiff_int[i] / df$meanPre_Int[i]) * 100
     pct_change_con[i] <- (meanDiff_con[i] / df$meanPre_Con[i]) * 100
 
     # -------------------------
-    ### BLOQUE: Cálculo de diferencias de medias (opcionales)
+    ### BLOQUE: Calculo de diferencias de medias (opcionales)
     # -------------------------
     if (MeanDifferences) {
       varMeanDiff_int[i] <- sd_diff_int[i]^2 / df$n_Int[i]
@@ -492,7 +492,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   }
 
   # -------------------------
-  ### BLOQUE: GENERACIÓN DE INFORME WORD DE IMPUTACIONES (REVISADO Y CORREGIDO)
+  ### BLOQUE: GENERACION DE INFORME WORD DE IMPUTACIONES (REVISADO Y CORREGIDO)
   # -------------------------
   if (!is.null(report_imputations) && isTRUE(report_imputations)) {
     if (!requireNamespace("officer", quietly = TRUE)) stop("Package 'officer' is required.")
@@ -583,7 +583,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
               ))
               next
             }
-            # Otras imputaciones automáticas
+            # Otras imputaciones automaticas
             matches <- stringr::str_match(log, "sd_diff_int \\((\\w+): ([0-9.\\-]+)\\)")
             if (!any(is.na(matches))) {
               metodo <- matches[2]
@@ -748,7 +748,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
 
 
   # -------------------------
-  ### BLOQUE: Construcción final del data.frame
+  ### BLOQUE: Construccion final del data.frame
   # -------------------------
   if (add_to_df) {
     df$r_int <- r_int
@@ -810,7 +810,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     }
 
     # -------------------------
-    # BLOQUE: Eliminación de columnas dummy creadas
+    # BLOQUE: Eliminacion de columnas dummy creadas
     # -------------------------
     dummy_cols <- c("meanPre_Con", "meanPost_Con", "sd_pre_Con", "sd_post_Con",
                     "upperCI_Con", "lowerCI_Con", "n_Con", "p_value_Con")
