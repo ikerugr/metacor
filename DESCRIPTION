@@ -9,7 +9,7 @@ Authors@R: C(person(given = c("Iker", "J."),
              person(given = c("Saul"),
                   family = "Martin-Rodriguez",
                   role = c("ctb"),
-                  email = "saulmrguez@gmail.com")
+                  email = "saulmrguez@gmail.com"))
 Maintainer: Iker J. Bautista <ikerugr@gmail.com>
 Description: Tools for the calculation of effect sizes (SMD, mean difference) in pre-post controlled studies, including robust imputation of missing variances and correlations.
     The main function 'metacor_dual' implements several methods for imputing missing SDdiff or correlation coefficients,
