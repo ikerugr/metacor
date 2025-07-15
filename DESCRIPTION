@@ -15,5 +15,7 @@ Imports:
     officer,
     stringr,
     stats
-
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

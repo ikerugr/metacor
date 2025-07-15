@@ -1,0 +1,19 @@
+---
+title: "Introduction to metacor"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to metacor}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(metacor)
+
+metacor: Meta-analysis with Correlated Data
+
+metacor is an R package designed to facilitate the calculation of effect sizes and imputation of missing values in studies with pre-post and intervention-control designs. It offers robust handling of missing correlations, standard deviations, and generates a detailed report for reproducibility.
