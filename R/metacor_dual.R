@@ -26,7 +26,7 @@
 #' # See vignette("metacor-intro") for a complete example.
 #' @references
 #' Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page, M. J., & Welch, V. A. (Eds.). (2023). Cochrane handbook for systematic reviews of interventions (Version 6.3). Cochrane. https://training.cochrane.org/handbook
-#' Fu, R., Vandermeer, B.W., Shamliyan, T.A., O’Neil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. AHRQ Publication No. 13-EHC103-EF. https://effectivehealthcare.ahrq.gov/reports/final.cfm
+#' Fu, R., Vandermeer, B.W., Shamliyan, T.A., ONeil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. AHRQ Publication No. 13-EHC103-EF. https://effectivehealthcare.ahrq.gov/reports/final.cfm
 metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
                          apply_hedges = TRUE, SMD_method = "SMDpre", MeanDifferences = FALSE,
                          impute_method = "none", verbose = TRUE, report_imputations = FALSE,
@@ -42,7 +42,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   imp_log <- vector("list", nrow(df))
 
   # -------------------------
-  # BLOQUE: Creación de columnas dummy para el grupo control si no existen
+  # BLOQUE: Creacion de columnas dummy para el grupo control si no existen
   # -------------------------
   control_vars <- c("meanPre_Con", "meanPost_Con", "sd_pre_Con", "sd_post_Con",
                     "upperCI_Con", "lowerCI_Con", "n_Con", "p_value_Con")
@@ -113,7 +113,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
             sprintf("sd_diff_int (manual: %.4f)", val)
           ))
         }
-        # r_int se calculara despues al usar este sd_diff_int, así que el log de r_int se pone en el segundo bucle
+
       }
     }
   }
@@ -151,13 +151,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
             sprintf("sd_diff_con (manual: %.4f)", val)
           ))
         }
-        # r_con se calculará después al usar este sd_diff_con, así que el log de r_con se pone en el segundo bucle
+
       }
     }
   }
 
   # -------------------------
-  # PRIMER BUCLE: Calcular sd_diff_int y sd_diff_con (NO imputar por 'direct' aquí)
+  # PRIMER BUCLE: Calcular sd_diff_int y sd_diff_con (NO imputar por 'direct' aqui)
   # -------------------------
   for (i in seq_len(nrow(df))) {
     if (method %in% c("p_value", "both")) {
@@ -182,7 +182,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       sd_diff_con[i] <- if (method == "p_value") sd_diff_p_con else if (method == "ci") sd_diff_ci_con else ifelse(!is.na(sd_diff_p_con), sd_diff_p_con, sd_diff_ci_con)
     }
 
-    # BLOQUE: Cálculo inicial de r_int y r_con
+    # BLOQUE: Calculo inicial de r_int y r_con
     r_int[i] <- ((df$sd_pre_Int[i]^2 + df$sd_post_Int[i]^2 - sd_diff_int[i]^2) /
                    (2 * df$sd_pre_Int[i] * df$sd_post_Int[i]))
     r_con[i] <- ((df$sd_pre_Con[i]^2 + df$sd_post_Con[i]^2 - sd_diff_con[i]^2) /
@@ -193,9 +193,9 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   }
 
   # -------------------------
-  # BLOQUE: Calcular máximos para imputar (para 'direct')
+  # BLOQUE: Calcular maximos para imputar (para 'direct')
   # -------------------------
-  # Calcular máximos para imputacion "direct" solo si hay datos conocidos
+  # Calcular maximos para imputacion "direct" solo si hay datos conocidos
   sd_diff_int_max <- if (any(!is.na(sd_diff_int))) max(sd_diff_int, na.rm = TRUE) else NA_real_
   sd_diff_con_max <- if (any(!is.na(sd_diff_con))) max(sd_diff_con, na.rm = TRUE) else NA_real_
 
@@ -209,7 +209,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     imputado_int <- FALSE
     imputado_con <- FALSE
 
-    # IMPUTACIÓN INTERVENCION
+    # IMPUTACION INTERVENCION
     if (is.na(sd_diff_int[i])) {
       if (impute_method == "direct") {
         if (!is.na(sd_diff_int_max) && is.finite(sd_diff_int_max)) {
@@ -238,7 +238,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
         }
       }
 
-      # Añade log para sd_diff_int si fue imputado
+      # Add log para sd_diff_int si fue imputado
       if (report_imputations && imputado_int) {
         if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
         imp_log[[i]] <- unique(c(imp_log[[i]],
@@ -257,13 +257,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
 
             warning(sprintf(
               paste0("Row %d: Imputed sd_diff_int = %.4f gives r_int = %.4f (outside [-0.9999, 0.9999]).\n",
-                     "→ Suggested sd_diff_int range: [%.4f, %.4f].\n→ r_int not assigned."),
+                     "Suggested sd_diff_int range: [%.4f, %.4f].\n r_int not assigned."),
               i, sd_diff_int[i], r_temp, sd_min, sd_max
             ))
             r_int[i] <- NA
           } else {
             r_int[i] <- r_temp
-            # Añade log para r_int imputado
+            # add log para r_int imputado
             if (report_imputations && imputado_int && !is.na(r_int[i]) && r_int[i] > -0.9999 && r_int[i] < 0.9999) {
               if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
               imp_log[[i]] <- unique(c(imp_log[[i]], sprintf("r_int (%s: %.4f)", impute_method, r_int[i])))
@@ -273,7 +273,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       }
     }
 
-    # IMPUTACIÓN MANUAL INTERVENCION (custom_sd_diff_int)
+    # IMPUTACION MANUAL INTERVENCION (custom_sd_diff_int)
     if (!is.na(sd_diff_int[i]) && !is.null(custom_sd_diff_int)) {
       custom_rows <- sapply(custom_sd_diff_int, function(entry) entry$row)
       if (i %in% custom_rows) {
@@ -320,7 +320,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
           }
         }
       }
-      # Añade log para sd_diff_con si fue imputado
+      # add log para sd_diff_con si fue imputado
       if (report_imputations && imputado_con) {
         if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
         imp_log[[i]] <- unique(c(imp_log[[i]],
@@ -339,13 +339,13 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
 
             warning(sprintf(
               paste0("Row %d: Imputed sd_diff_con = %.4f gives r_con = %.4f (outside [-0.9999, 0.9999]).\n",
-                     "→ Suggested sd_diff_con range: [%.4f, %.4f].\n→ r_con not assigned."),
+                     "Suggested sd_diff_con range: [%.4f, %.4f].\n r_con not assigned."),
               i, sd_diff_con[i], r_temp, sd_min, sd_max
             ))
             r_con[i] <- NA
           } else {
             r_con[i] <- r_temp
-            # Añade log para r_con imputado
+            # add log para r_con imputado
             if (report_imputations && imputado_con && !is.na(r_con[i]) && r_con[i] > -0.9999 && r_con[i] < 0.9999) {
               if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
               imp_log[[i]] <- unique(c(imp_log[[i]], sprintf("r_con (%s: %.4f)", impute_method, r_con[i])))
@@ -377,7 +377,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
 
 
 
-  # --- Aquí sigue el resto del código igual ---
+  # --- Aqui sigue el resto del codigo igual ---
   for (i in seq_len(nrow(df))) {
 
     # -------------------------
@@ -387,7 +387,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     J_con <- if (apply_hedges) 1 - (3 / (4 * (df$n_Con[i] - 1) - 1)) else 1
 
     # -------------------------
-    ### BLOQUE: Calculo de tamaños del efecto (SMDs)
+    ### BLOQUE: Calculo de effect size (SMDs)
     # -------------------------
     if (SMD_method == "SMDpre") {
       SMDpre_int[i] <- J_int * (meanDiff_int[i] / df$sd_pre_Int[i])
@@ -438,7 +438,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       # Diferencia de efectos: ScMDpre
       ScMDpre[i] <- SMDmat_int - SMDmat_con
 
-      # Factores de corrección Hedges g
+      # Factores de correccion Hedges g
       J_int <- if (apply_hedges) 1 - (3 / (4 * (df$n_Int[i] - 1) - 1)) else 1
       J_con <- if (apply_hedges) 1 - (3 / (4 * (df$n_Con[i] - 1) - 1)) else 1
 
@@ -548,7 +548,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       rows <- which(df$study_name == study)
       imp_vars <- unlist(imp_log[rows])
       if (length(imp_vars) > 0) {
-        doc <- body_add_par(doc, paste0("• ", study, ":"), style = "Normal")
+        doc <- body_add_par(doc, paste0("- ", study, ":"), style = "Normal")
         for (i in rows) {
           # Intervention group - SDdiff imputations
           logs_sd_int <- imp_log[[i]][grepl("^sd_diff_int", imp_log[[i]])]
@@ -656,7 +656,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
               ))
               next
             }
-            # Otras imputaciones automáticas
+            # Otras imputaciones automaticas
             matches <- stringr::str_match(log, "sd_diff_con \\((\\w+): ([0-9.\\-]+)\\)")
             if (!any(is.na(matches))) {
               metodo <- matches[2]
@@ -735,7 +735,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     ))
     doc <- body_add_par(doc, "", style = "Normal")
     doc <- body_add_fpar(doc, fpar(
-      ftext("Fu, R., Vandermeer, B.W., Shamliyan, T.A., O’Neil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). ", style_normal),
+      ftext("Fu, R., Vandermeer, B.W., Shamliyan, T.A., ONeil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). ", style_normal),
       ftext("Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. ", style_normal),
       ftext("(Prepared by the Oregon Evidence-based Practice Center under Contract No. 290-2007-10057-I.) ", style_normal),
       ftext("AHRQ Publication No. 13-EHC103-EF. Rockville, MD: Agency for Healthcare Research and Quality. July 2013. ", style_normal),
