@@ -15,3 +15,5 @@
 ^docs/
 ^.*\\.nb.html$
 ^\\.gitignore$
+^doc$
+^Meta$

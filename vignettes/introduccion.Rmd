@@ -26,16 +26,6 @@ The `metacor` package provides tools for conducting meta-analyses when your effe
 - Produces detailed imputation reports (Word)
 - Flexible for intervention-only or control-intervention designs
 
-## Installation
-
-You can install the development version of metacor from GitHub using:
-
-```{r}
-# install.packages("remotes")
-remotes::install_github("ikerugr/metacor")
-
-```
-
 ## Quick Start Example
 
 Let's illustrate a simple workflow with example data:
