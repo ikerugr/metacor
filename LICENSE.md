@@ -1,4 +1,4 @@
-# MIT License
+# MIT + file LICENSE
 
 Copyright (c) 2025 Iker J. Bautista
 
