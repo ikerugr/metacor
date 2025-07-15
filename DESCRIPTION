@@ -4,7 +4,7 @@ Title: Meta-Analytic Effect Size Calculation for Pre-Post Designs with Correlati
 Version: 1.1.0
 Authors@R: C(person(given = c("Iker", "J."),
                   family = "Bautista",
-                  role = c("cre"),
+                  role = c("aut"),
                   email = "ikerugr@gmail.com"),
              person(given = c("Saul"),
                   family = "Martin-Rodriguez",
