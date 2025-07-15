@@ -57,7 +57,6 @@ Generates a detailed imputation report in Word format.
 }
 \examples{
 # See vignette("metacor-intro") for a complete example.
-
 }
 \references{
 Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page, M. J., & Welch, V. A. (Eds.). (2023). Cochrane handbook for systematic reviews of interventions (Version 6.3). Cochrane. https://training.cochrane.org/handbook

@@ -20,10 +20,11 @@
 #'
 #' @return Data frame with calculated variables. Optionally, a Word report ('imputation_report.docx') is generated.
 #' @export
-#'
+#'#' @importFrom stats qt
+#' @importFrom stringr str_match str_detect
+#' @importFrom officer read_docx body_add_fpar body_add_par fpar ftext fp_text
 #' @examples
 #' # See vignette("metacor-intro") for a complete example.
-#'
 #' @references
 #' Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page, M. J., & Welch, V. A. (Eds.). (2023). Cochrane handbook for systematic reviews of interventions (Version 6.3). Cochrane. https://training.cochrane.org/handbook
 #' Fu, R., Vandermeer, B.W., Shamliyan, T.A., O’Neil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. AHRQ Publication No. 13-EHC103-EF. https://effectivehealthcare.ahrq.gov/reports/final.cfm
