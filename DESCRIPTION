@@ -1,7 +1,7 @@
 Package: metacor
 Type: Package
 Title: Meta-Analytic Effect Size Calculation for Pre-Post Designs with Correlation Imputation
-Version: 0.1.0
+Version: 1.1.0
 Author: Iker J. Bautista [aut, cre]
 Maintainer: Iker J. Bautista <ikerugr@gmail.com>
 Description: Tools for the calculation of effect sizes (SMD, mean difference) in pre-post controlled studies, including robust imputation of missing variances and correlations.
