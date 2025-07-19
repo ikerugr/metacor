@@ -4,7 +4,7 @@ Title: Meta-Analytic Effect Size Calculation for Pre-Post Designs with Correlati
 Version: 1.1.0
 Authors@R: c(person(given = c("Iker", "J."), family = "Bautista", role = c("aut", "cre"), email = "ikerugr@gmail.com"), person(given = c("Saul", "M."), family = "Rodriguez", role = "ctb", email = "saulmrguez@gmail.com"))
 Maintainer: Iker J. Bautista <ikerugr@gmail.com>
-Description: Tools for the calculation of effect sizes (i.e., standardized mean differences [SMDs], mean difference) in pre-post controlled studies with or without control group, including robust imputation of missing variances and correlations. The main function metacor_dual implements several methods for imputing missing standard deviation of differences scorec (SDdiff) or correlation coefficients, and generates transparent imputation reports. Designed for meta-analyses with incomplete summary statistics.
+Description: Tools for the calculation of effect sizes (standardised mean difference, SMD) and mean difference (MD) in pre-post controlled studies, including robust imputation of missing variances (standard deviation of changes, SDchange) and correlations (Pearson correlation coefficient, r). The main function metacor_dual() implements several methods for imputing missing SDchange or r, and generates transparent imputation reports. Designed for meta-analyses with incomplete summary statistics. For more details on the methods, see Higgins et al. (2023) <https://training.cochrane.org/handbook> and Fu et al. (2013) <https://effectivehealthcare.ahrq.gov/products/quantitative-synthesis/research-2013-5>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
