@@ -200,7 +200,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
   sd_diff_con_max <- if (any(!is.na(sd_diff_con))) max(sd_diff_con, na.rm = TRUE) else NA_real_
 
   if (is.na(sd_diff_int_max)) warning("No real SD diff values available to impute (int).")
-  if (is.na(sd_diff_con_max)) warning("No real SD diff values available to impute (con).")
+  if (is.na(sd_diff_con_max) && !single_group) warning("No real SD diff values available to impute (con).")
 
   # -------------------------
   # SEGUNDO BUCLE: Imputacion de los NA con recalculo y warnings de rango r
@@ -824,4 +824,3 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     return(df)
   }
 }
-
