@@ -57,7 +57,8 @@ Generates a detailed imputation report in Word format.
 }
 \examples{
 df <- data.frame(
-  study_name = c("Study1", "Study2", "Study3", "Study4","Study5", "Study6", "Study7", "Study8", "Study9"),
+  study_name = c("Study1", "Study2", "Study3", "Study4",
+  "Study5", "Study6", "Study7", "Study8", "Study9"),
   p_value_Int = c(1.038814e-07, NA, NA, NA, NA, 2.100000e-02, NA, NA, NA),
   n_Int = c(10, 10, 10, 10, 15, 15, 10, 10, 10),
   meanPre_Int = c(8.17, 10.09, 10.18, 9.85, 9.51, 7.70, 10.00, 11.53, 11.20),
