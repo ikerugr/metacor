@@ -1,7 +1,7 @@
 Package: metacor
 Type: Package
 Title: Meta-Analytic Effect Size Calculation for Pre-Post Designs with Correlation Imputation
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(person(given = c("Iker", "J."), family = "Bautista", role = c("aut", "cre"), email = "ikerugr@gmail.com"), person(given = c("Saul", "M."), family = "Rodriguez", role = "ctb", email = "saulmrguez@gmail.com"))
 Maintainer: Iker J. Bautista <ikerugr@gmail.com>
 Description: Tools for the calculation of effect sizes (standardised mean difference) and mean difference in pre-post controlled studies, including robust imputation of missing variances (standard deviation of changes) and correlations (Pearson correlation coefficient). The main function metacor_dual() implements several methods for imputing missing standard deviation of changes or Pearson correlation coefficient, and generates transparent imputation reports. Designed for meta-analyses with incomplete summary statistics. For more details on the methods, see Higgins et al. (2023) and Fu et al. (2013).
