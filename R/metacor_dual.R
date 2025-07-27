@@ -195,15 +195,39 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       sd_diff_con[i] <- if (method == "p_value") sd_diff_p_con else if (method == "ci") sd_diff_ci_con else ifelse(!is.na(sd_diff_p_con), sd_diff_p_con, sd_diff_ci_con)
     }
 
-    # BLOQUE: Calculo inicial de r_int y r_con
+    # BLOQUE: Calculo inicial de r_int y r_con con validación de rango
+
     r_int[i] <- ((df$sd_pre_Int[i]^2 + df$sd_post_Int[i]^2 - sd_diff_int[i]^2) /
                    (2 * df$sd_pre_Int[i] * df$sd_post_Int[i]))
+    if (!is.na(r_int[i]) && (r_int[i] <= -0.9999 || r_int[i] >= 0.9999)) {
+      if (verbose) warning(sprintf(
+        paste0("Row %d: r_int = %.4f (outside [-0.9999, 0.9999]) calculated from input data.\n",
+               "Check input values or p-value/CI for possible inconsistencies.\n r_int set to NA."),
+        i, r_int[i]
+      ))
+      r_int[i] <- NA
+      if (report_imputations) {
+        if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
+        imp_log[[i]] <- unique(c(imp_log[[i]], "r_int (initial: NA, out of range)"))
+      }
+    }
+
     r_con[i] <- ((df$sd_pre_Con[i]^2 + df$sd_post_Con[i]^2 - sd_diff_con[i]^2) /
                    (2 * df$sd_pre_Con[i] * df$sd_post_Con[i]))
-
-    meanDiff_int[i] <- df$meanPost_Int[i] - df$meanPre_Int[i]
-    meanDiff_con[i] <- df$meanPost_Con[i] - df$meanPre_Con[i]
+    if (!single_group && !is.na(r_con[i]) && (r_con[i] <= -0.9999 || r_con[i] >= 0.9999)) {
+      if (verbose) warning(sprintf(
+        paste0("Row %d: r_con = %.4f (outside [-0.9999, 0.9999]) calculated from input data.\n",
+               "Check input values or p-value/CI for possible inconsistencies.\n r_con set to NA."),
+        i, r_con[i]
+      ))
+      r_con[i] <- NA
+      if (report_imputations) {
+        if (is.null(imp_log[[i]])) imp_log[[i]] <- character()
+        imp_log[[i]] <- unique(c(imp_log[[i]], "r_con (initial: NA, out of range)"))
+      }
+    }
   }
+
 
   # -------------------------
   # BLOQUE: Calcular maximos para imputar (para 'direct')
