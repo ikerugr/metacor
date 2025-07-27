@@ -195,7 +195,7 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
       sd_diff_con[i] <- if (method == "p_value") sd_diff_p_con else if (method == "ci") sd_diff_ci_con else ifelse(!is.na(sd_diff_p_con), sd_diff_p_con, sd_diff_ci_con)
     }
 
-    # BLOQUE: Calculo inicial de r_int y r_con con validación de rango
+    # BLOQUE: Calculo inicial de r_int y r_con con validacion de rango
 
     r_int[i] <- ((df$sd_pre_Int[i]^2 + df$sd_post_Int[i]^2 - sd_diff_int[i]^2) /
                    (2 * df$sd_pre_Int[i] * df$sd_post_Int[i]))
