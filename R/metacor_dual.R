@@ -500,8 +500,8 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     # -------------------------
     ### BLOQUE: Calculo del porcentaje de cambio
     # -------------------------
-    pct_change_int[i] <- (meanDiff_int[i] / df$meanPre_Int[i]) * 100
-    pct_change_con[i] <- (meanDiff_con[i] / df$meanPre_Con[i]) * 100
+    pct_change_int[i] <- ((df$meanPost_Int[i]- df$meanPre_Int[i]) / df$meanPre_Int[i]) * 100
+    pct_change_con[i] <- ((df$meanPost_Con[i]- df$meanPre_Con[i]) / df$meanPre_Con[i]) * 100
 
     # -------------------------
     ### BLOQUE: Calculo de diferencias de medias (opcionales)
@@ -861,5 +861,3 @@ metacor_dual <- function(df, digits = NULL, add_to_df = TRUE, method = "both",
     return(df)
   }
 }
-
-
