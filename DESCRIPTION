@@ -1,7 +1,7 @@
 Package: metacor
 Type: Package
 Title: Meta-Analytic Effect Size Calculation for Pre-Post Designs with Correlation Imputation
-Version: 1.2.0
+Version: 1.2.1
 Authors@R: c(
   person(given = c("Iker","J."), family = "Bautista", role = c("aut","cre"), email = "ikerugr@gmail.com"),
   person(given = c("Saul","M."),  family = "Rodriguez", role = "ctb",        email = "saulmrguez@gmail.com")
