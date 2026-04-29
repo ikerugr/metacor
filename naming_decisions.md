@@ -73,17 +73,22 @@ The single approved root word for each concept:
 
 ## 4. Input columns expected from the user
 
+All canonical names use **pure snake_case** — no mixed case anywhere, to
+remove the cognitive cost of remembering which letters are capitalised.
+
 | v1.2.1 | v1.3.0 |
 |---|---|
-| `meanPre_Int`, `meanPost_Int` | `meanPre_int`, `meanPost_int` |
+| `meanPre_Int`, `meanPost_Int` | `mean_pre_int`, `mean_post_int` |
 | `sd_pre_Int`, `sd_post_Int` | `sd_pre_int`, `sd_post_int` |
 | `n_Int`, `p_value_Int` | `n_int`, `p_value_int` |
-| `upperCI_Int`, `lowerCI_Int` | `upperCI_int`, `lowerCI_int` |
-| `meanPre_Con` … `lowerCI_Con` | `meanPre_ctrl` … `lowerCI_ctrl` |
+| `upperCI_Int`, `lowerCI_Int` | `upper_ci_int`, `lower_ci_int` |
+| `meanPre_Con` … `lowerCI_Con` | `mean_pre_ctrl` … `lower_ci_ctrl` |
 
 The user is **not required** to rename their columns manually — the column
-matcher (§6) handles legacy `_Int`/`_Con` suffixes automatically and emits a
-deprecation warning.
+matcher (§6) handles legacy `_Int`/`_Con` suffixes and the v1.2.x mixed-case
+column names (`meanPre_Int`, `upperCI_Int`, etc.) automatically. Pure
+case-only differences are silent renames; switching `_Con` to `_ctrl` (a
+genuine vocabulary change) emits a deprecation warning.
 
 ---
 
@@ -124,10 +129,10 @@ comparison:
 - lowercase
 - remove separators: `_`, `-`, `.`, whitespace
 
-Examples (all match the same canonical column):
+Examples (all match the same canonical column `mean_pre_int`):
 
 ```
-meanPre_int   meanPreInt   mean_pre_int   Mean.Pre.Int   "mean pre int"
+mean_pre_int   meanPreInt   meanpreint   Mean.Pre.Int   "mean pre int"
 ```
 
 This layer cannot produce false positives — it only collapses formatting
@@ -142,15 +147,15 @@ no general fuzzy matching.
 
 | Canonical stem | Accepted synonyms |
 |---|---|
-| `meanPre` | `mean_pre`, `pre_mean`, `m_pre`, `meanbaseline`, `baseline_mean`, `pre`, `m1` |
-| `meanPost` | `mean_post`, `post_mean`, `m_post`, `meanfollowup`, `followup_mean`, `post`, `m2` |
+| `mean_pre` | `meanpre`, `pre_mean`, `m_pre`, `meanbaseline`, `baseline_mean`, `pre`, `m1`, `mean1` |
+| `mean_post` | `meanpost`, `post_mean`, `m_post`, `meanfollowup`, `followup_mean`, `post`, `m2`, `mean2` |
 | `sd_pre` | `sdpre`, `sd_baseline`, `sd1`, `s_pre` |
 | `sd_post` | `sdpost`, `sd_followup`, `sd2`, `s_post` |
 | `sd_change` | `sd_diff`, `sd_difference`, `sdchange`, `sd_d`, `sdc`, `sd_of_change` |
 | `n` | `n_total`, `sample_size`, `samplesize`, `nsubjects` |
 | `p_value` | `pvalue`, `pval`, `sig` |
-| `upperCI` | `upper_ci`, `ciupper`, `ci_upper`, `ub`, `upperbound`, `ci_high` |
-| `lowerCI` | `lower_ci`, `cilower`, `ci_lower`, `lb`, `lowerbound`, `ci_low` |
+| `upper_ci` | `upperci`, `ciupper`, `ci_upper`, `ub`, `upperbound`, `ci_high` |
+| `lower_ci` | `lowerci`, `cilower`, `ci_lower`, `lb`, `lowerbound`, `ci_low` |
 
 **Explicitly rejected as too short / ambiguous:** `p` (alone), `c`, `e`, `i`,
 `t` — they can collide with t-statistics, CI columns, generic group letters.
@@ -160,7 +165,7 @@ no general fuzzy matching.
 | Canonical suffix | Accepted synonyms |
 |---|---|
 | `_int` | `_intervention`, `_treatment`, `_trt`, `_exp`, `_Int` |
-| `_ctrl` | `_control`, `_con`, `_Con`, `_placebo`, `_pbo` |
+| `_ctrl` | `_control`, `_con`, `_Con`, `_placebo`, `_pbo`, `_sham`, `_passive` |
 
 The legacy `_Int` and `_Con` are listed here so existing user code Just Works
 under `column_matching = "flexible"` — but the matcher emits a one-time
@@ -179,7 +184,7 @@ Every resolved match is reported once per call:
 
 ```
 ℹ Matched columns to canonical names:
-  • "Mean_Pre_Treatment"   → meanPre_int
+  • "Mean_Pre_Treatment"   → mean_pre_int
   • "SD.diff.intervention" → sd_change_int
   • "Sample.Size.T"        → n_int
 ℹ 3 columns matched flexibly. Use column_matching = "strict" to disable.
@@ -189,9 +194,9 @@ Ambiguity is a hard error, never a silent guess:
 
 ```
 ✖ Column matching is ambiguous:
-  • "sd_pre" could match both sd_pre_int and sd_pre_ctrl.
-  • "sample" could match both n_int and n_ctrl.
-ℹ Either rename the columns explicitly, or pass column_matching = "strict".
+  * sd_pre_int <- {sd_pre_int, SD.Pre.Int}
+  * n_int <- {n_int, sample_size_intervention}
+ℹ Rename the offending columns or pass column_matching = "strict".
 ```
 
 Under `column_matching = "strict"`, only the canonical names listed in §4 are
