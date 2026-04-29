@@ -6,95 +6,100 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-metacor is an R package for advanced meta-analysis of pre-post studies,
-with or without a control group. It provides flexible effect size
-calculation, robust imputation strategies for missing SDs or
-correlations, and reproducible reporting.
+`metacor` is an R package for meta-analyses of pre–post studies, with or
+without a control group. It calculates effect sizes (standardised mean
+differences and mean differences) and imputes the two summary statistics
+that primary studies most often fail to report — the **standard
+deviation of the change scores** (`sd_change`) and the **pre–post
+correlation coefficient** (`r`) — so the variance of the effect size can
+still be estimated.
 
 ## Installation
 
-You can install the development version of metacor from GitHub
+The released version is on CRAN:
 
 ``` r
-# Install the remotes package if needed:
-# install.packages("remotes")
-
-remotes::install_github("https://github.com/ikerugr/metacor")
+install.packages("metacor")
 ```
 
-## Example
+The development version is on GitHub:
 
-Suppose you have a data frame of pre-post means, SDs, and sample sizes.
-Here’s a minimal example with fake data:
+``` r
+# install.packages("remotes")
+remotes::install_github("ikerugr/metacor")
+```
+
+## Quick example (single-group pre–post)
 
 ``` r
 library(metacor)
 
-# Example dataset (add your real studies for actual analysis)
 df <- data.frame(
-  study_name = c("Study1", "Study2", "Study3", "Study4","Study5", "Study6", "Study7", "Study8", "Study9"),
-  p_value_Int = c(1.038814e-07, NA, NA, NA, NA, 2.100000e-02, NA, NA, NA),
-  n_Int = c(10, 10, 10, 10, 15, 15, 10, 10, 10),
-  meanPre_Int = c(8.17, 10.09, 10.18, 9.85, 9.51,7.70, 10.00,  11.53, 11.20),
-  meanPost_Int = c(10.12, 12.50, 12.56,10.41, 10.88, 9.20, 10.80,13.42,12.00),
-  sd_pre_Int = c(1.83,0.67,0.66,0.90,0.62, 0.90, 0.70, 0.60, 1.90),
-  sd_post_Int = c(1.85, 0.72, 0.97, 0.67, 0.76, 1.10, 0.70,0.80,1.80),
-  upperCI_Int = c(NA, NA,NA, NA,NA, NA,NA, NA, NA),
-  lowerCI_Int = c(NA, NA,NA, NA,NA, NA,NA, NA, NA))
+  study_name    = paste0("Study", 1:9),
+  p_value_int   = c(1.04e-07, NA, NA, NA, NA, 0.021, NA, NA, NA),
+  n_int         = c(10, 10, 10, 10, 15, 15, 10, 10, 10),
+  mean_pre_int  = c(8.17, 10.09, 10.18, 9.85, 9.51, 7.70, 10.00, 11.53, 11.20),
+  mean_post_int = c(10.12, 12.50, 12.56, 10.41, 10.88, 9.20, 10.80, 13.42, 12.00),
+  sd_pre_int    = c(1.83, 0.67, 0.66, 0.90, 0.62, 0.90, 0.70, 0.60, 1.90),
+  sd_post_int   = c(1.85, 0.72, 0.97, 0.67, 0.76, 1.10, 0.70, 0.80, 1.80),
+  upper_ci_int  = NA_real_,
+  lower_ci_int  = NA_real_
+)
 
-results <- metacor_dual(df,
-                        digits = 3,
-                        method = "both",
-                        apply_hedges = TRUE,
-                        add_to_df = TRUE,
-                        SMD_method = "SMDpre",
-                        MeanDifferences = TRUE,
-                        impute_method = "cv",
-                        verbose = TRUE,
-                        report_imputations = TRUE,
-                        custom_sd_diff_int = NULL,
-                        custom_sd_diff_con = NULL,
-                        single_group = TRUE)
-#> Warning in metacor_dual(df, digits = 3, method = "both", apply_hedges = TRUE, :
-#> No real SD diff values available to impute (con).
-#> Imputed sd_diff_int at row 2 using 'cv' (0.8494): 2.0470
-#> Warning in metacor_dual(df, digits = 3, method = "both", apply_hedges = TRUE, : Row 2: Imputed sd_diff_int = 2.0470 gives r_int = -3.3405 (outside [-0.9999, 0.9999]).
-#> → Suggested sd_diff_int range: [0.0510, 1.3900].
-#> → r_int not assigned.
-#> Imputed sd_diff_int at row 3 using 'cv' (0.8494): 2.0215
-#> Warning in metacor_dual(df, digits = 3, method = "both", apply_hedges = TRUE, : Row 3: Imputed sd_diff_int = 2.0215 gives r_int = -2.1166 (outside [-0.9999, 0.9999]).
-#> → Suggested sd_diff_int range: [0.3102, 1.6300].
-#> → r_int not assigned.
-#> Imputed sd_diff_int at row 4 using 'cv' (0.8494): 0.4757
-#> Imputed sd_diff_int at row 5 using 'cv' (0.8494): 1.1636
-#> Imputed sd_diff_int at row 7 using 'cv' (0.8494): 0.6795
-#> Imputed sd_diff_int at row 8 using 'cv' (0.8494): 1.6053
-#> Warning in metacor_dual(df, digits = 3, method = "both", apply_hedges = TRUE, : Row 8: Imputed sd_diff_int = 1.6053 gives r_int = -1.6428 (outside [-0.9999, 0.9999]).
-#> → Suggested sd_diff_int range: [0.2002, 1.4000].
-#> → r_int not assigned.
-#> Imputed sd_diff_int at row 9 using 'cv' (0.8494): 0.6795
+result <- metacor_dual(
+  df,
+  single_group  = TRUE,
+  effect_size   = "smd_pre",
+  impute_method = "cv",
+  digits        = 3,
+  verbose       = FALSE
+) |> suppressWarnings()
+
+result[, c("study_name", "r_int", "sd_change_int",
+           "smd_pre_int", "var_smd_pre_int")]
+#>   study_name r_int sd_change_int smd_pre_int var_smd_pre_int
+#> 1     Study1 0.976         0.407       0.974           0.076
+#> 2     Study2 0.465         0.720       3.289           0.923
+#> 3     Study3 0.680         0.711       3.297           0.881
+#> 4     Study4    NA         0.167       0.569              NA
+#> 5     Study5 0.843         0.409       2.089           0.209
+#> 6     Study6    NA         2.235       1.576              NA
+#> 7     Study7 0.942         0.239       1.045           0.094
+#> 8     Study8 0.710         0.565       2.880           0.682
+#> 9     Study9 0.993         0.239       0.385           0.013
 ```
 
-By default, a detailed Word report (imputation_report.docx) is
-generated, describing all imputations made. You can adjust arguments for
-imputation method, effect size, verbosity, and more.
+Set `report_imputations = TRUE` to generate `imputation_report.docx`
+describing every imputation performed (study, group, value, method,
+suggested feasible range) for inclusion as supplementary material.
 
 ## Features
 
-- Calculates multiple effect size metrics: SMDpre, SMDchange,
-  ScMDpooled, ScMDpre.
-- Handles both single-group and two-group (control vs intervention)
-  meta-analyses.
-- Flexible imputation: mean, direct, coefficient of variation, manual.
-- Generates a transparent, reproducible report for your systematic
-  review or meta-analysis.
+- Four effect-size families: `smd_pre`, `smd_change`, `smd_pooled`,
+  `smd_diff_groups`.
+- Single-group pre–post **and** intervention-vs-control designs.
+- Imputation strategies for missing `sd_change`: `none`, `direct`,
+  `mean`, `cv` (recommended), and per-study manual overrides.
+- Flexible column-name matching: accepts canonical names, v1.2.x legacy
+  names, and a closed dictionary of synonyms (`baseline_mean`,
+  `treatment`, `placebo`, …) so users don’t have to reformat their data
+  manually.
+- `check_metacor_consistency()` flags p-value / CI / `sd_change`
+  feasibility / extreme-`r` issues and provides per-study narrative
+  summaries.
+- Transparent, reproducible Word imputation report.
 
-## More information
+## Documentation
 
-vignette(“metacor-intro”)
+``` r
+vignette("metacor-intro",       package = "metacor")
+vignette("migrating-from-1.2",  package = "metacor")
+```
 
 ## Author
 
-Iker J. Bautista (2025) Chichester University
+Iker J. Bautista — University of Chichester (2025).
 
-This README was generated with readme.Rmd.
+`metacor` was developed alongside an applied paper describing the
+imputation methodology; see the package help pages and vignettes for
+full citations.

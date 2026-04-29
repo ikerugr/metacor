@@ -9,3 +9,6 @@
 inst/doc
 /doc/
 /Meta/
+README.html
+metacor.Rcheck/
+metacor_*.tar.gz

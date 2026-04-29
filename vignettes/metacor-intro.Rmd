@@ -1,0 +1,200 @@
+---
+title: "Introduction to metacor"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to metacor}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>"
+)
+library(metacor)
+```
+
+# What `metacor` is for
+
+Meta-analyses of pre--post studies require summary statistics that are
+rarely reported in primary papers --- in particular the **standard
+deviation of the change scores** (`sd_change`) and the **pre--post
+correlation coefficient** (`r`). Without these, standardised mean
+differences (SMDs) and their variances cannot be estimated correctly,
+and the usual fallback is a sensitivity analysis that not every team
+performs.
+
+`metacor` automates the calculation and imputation of `sd_change` and
+`r` from whatever summary statistics the primary studies *did* report
+(p-values, confidence intervals, sample sizes), and produces a
+transparent imputation report so the chosen strategy is fully
+documented.
+
+The package is designed for two designs:
+
+- **Single-group pre--post** (one arm, treatment only): set
+  `single_group = TRUE`.
+- **Pre--post with control** (intervention vs. control): the default.
+
+# Input data: the canonical schema
+
+`metacor_dual()` expects a data frame with these columns (suffix
+`_int` for the intervention group, `_ctrl` for the control group):
+
+| Column            | Meaning                                                |
+|-------------------|--------------------------------------------------------|
+| `study_name`      | identifier for each row                                |
+| `mean_pre_*`      | pre-test mean                                          |
+| `mean_post_*`     | post-test mean                                         |
+| `sd_pre_*`        | pre-test SD                                            |
+| `sd_post_*`       | post-test SD                                           |
+| `n_*`             | sample size                                            |
+| `p_value_*`       | within-group pre--post p-value (optional)              |
+| `upper_ci_*`      | upper bound of the 95% CI for the change (optional)    |
+| `lower_ci_*`      | lower bound of the 95% CI for the change (optional)    |
+
+In single-group designs only the `_int` columns are needed.
+
+## Flexible column matching
+
+You don't have to use the exact canonical names. By default
+`metacor_dual()` accepts:
+
+- **Case and separator variants.** `MeanPre_Int`, `mean.pre.int`,
+  `meanpreint` are all silently treated as `mean_pre_int`.
+- **A closed dictionary of synonyms.** `baseline_mean_treatment`
+  resolves to `mean_pre_int`; `_placebo` and `_sham` resolve to `_ctrl`;
+  `pval` resolves to `p_value`; `m1` and `m2` resolve to `mean_pre`
+  and `mean_post`.
+
+Every flexible match is reported. You can disable this with
+`column_matching = "strict"` if you want the function to require canonical
+names exactly.
+
+# A minimal single-group example
+
+```{r}
+df <- data.frame(
+  study_name    = paste0("Study", 1:9),
+  p_value_int   = c(1.04e-07, NA, NA, NA, NA, 0.021, NA, NA, NA),
+  n_int         = c(10, 10, 10, 10, 15, 15, 10, 10, 10),
+  mean_pre_int  = c(8.17, 10.09, 10.18, 9.85, 9.51, 7.70, 10.00, 11.53, 11.20),
+  mean_post_int = c(10.12, 12.50, 12.56, 10.41, 10.88, 9.20, 10.80, 13.42, 12.00),
+  sd_pre_int    = c(1.83, 0.67, 0.66, 0.90, 0.62, 0.90, 0.70, 0.60, 1.90),
+  sd_post_int   = c(1.85, 0.72, 0.97, 0.67, 0.76, 1.10, 0.70, 0.80, 1.80),
+  upper_ci_int  = NA_real_,
+  lower_ci_int  = NA_real_
+)
+```
+
+Run `metacor_dual()` with `effect_size = "smd_pre"` (the default) and
+the `cv` imputation method:
+
+```{r}
+result <- metacor_dual(
+  df,
+  single_group = TRUE,
+  effect_size  = "smd_pre",
+  impute_method = "cv",
+  digits       = 3,
+  verbose      = FALSE
+) |> suppressWarnings()
+result[, c("study_name", "r_int", "sd_change_int",
+           "smd_pre_int", "var_smd_pre_int", "se_smd_pre_int")]
+```
+
+The function added six columns to your data: the imputed pre--post
+correlation `r_int`, the SD of the change `sd_change_int`, the SMD
+itself `smd_pre_int`, and its variance / standard error.
+
+# Choosing an effect size
+
+`effect_size` selects one of four families:
+
+| Value               | What it computes                                                   | Denominator   |
+|---------------------|---------------------------------------------------------------------|---------------|
+| `"smd_pre"` (default)| SMD using pre-test SD as denominator                              | `sd_pre_int`  |
+| `"smd_change"`       | SMD using SD of change scores                                      | `sd_change_int`|
+| `"smd_pooled"`       | Standardised change mean difference, pooled SD (controlled designs)| pooled SD     |
+| `"smd_diff_groups"`  | Difference of standardised changes between intervention and control | per-group SD  |
+
+The variance formulas differ accordingly. `smd_pre` requires `r`;
+`smd_change` does not.
+
+# Imputation methods for `sd_change`
+
+When `sd_change` cannot be computed from the reported p-value or CI,
+`impute_method` chooses the imputation strategy:
+
+| Method     | What it does                                                                          |
+|------------|----------------------------------------------------------------------------------------|
+| `"none"`   | leaves missing `sd_change` (and downstream `r`) as NA                                  |
+| `"direct"` | replaces missing values with the **maximum** observed `sd_change` (conservative)       |
+| `"mean"`   | replaces missing values with the **mean** of observed `sd_change`                      |
+| `"cv"`     | uses `\|mean_diff\|` × **robust global median CV** (recommended; see Higgins et al. 2023) |
+
+Manual imputation per study is also supported via
+`custom_sd_change_int` and `custom_sd_change_ctrl` (lists of
+`list(row = ..., value = ...)`).
+
+# Imputation report
+
+Set `report_imputations = TRUE` to generate a Word file
+(`imputation_report.docx`) describing every imputation performed: which
+study, which group, the imputed value, the suggested feasible range, and
+the method used. This file is meant to be included as supplementary
+material in your meta-analysis.
+
+```{r, eval = FALSE}
+result <- metacor_dual(df, single_group = TRUE, impute_method = "cv",
+                       report_imputations = TRUE)
+# Writes "imputation_report.docx" in the working directory.
+```
+
+# Internal consistency checks
+
+After running `metacor_dual()`, you can pass the result to
+`check_metacor_consistency()` to flag suspicious data points:
+
+```{r, eval = FALSE}
+result_with_md <- metacor_dual(df, single_group = TRUE,
+                               impute_method = "cv",
+                               mean_differences = TRUE,
+                               verbose = FALSE)
+result_checked <- check_metacor_consistency(result_with_md, interpret = TRUE)
+result_checked$summary_int
+```
+
+The function adds logical flag columns (`flag_p_mismatch_int`,
+`flag_CI_mismatch_int`, `flag_sd_change_out_of_range_int`,
+`flag_r_extreme_int`) and, with `interpret = TRUE`, narrative
+explanations per study.
+
+# Migrating from `metacor` 1.2.x
+
+If you are upgrading from a previous version, see the companion
+vignette `vignette("migrating-from-1.2", package = "metacor")` for the
+mapping of old argument names, old `effect_size` values
+(`"SMDpre"`, `"ScMDpooled"`, ...), and old column names (`sd_diff_*`,
+`_Con`, ...) to their v1.3 canonical equivalents. All v1.2.x names
+still work, with deprecation warnings.
+
+# References
+
+Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page,
+M. J., & Welch, V. A. (Eds.). (2023). *Cochrane handbook for systematic
+reviews of interventions* (Version 6.3). Cochrane.
+<https://training.cochrane.org/handbook>
+
+Fu, R., Vandermeer, B. W., Shamliyan, T. A., O'Neil, M. E., Yazdi, F.,
+Fox, S. H., & Morton, S. C. (2013). *Handling Continuous Outcomes in
+Quantitative Synthesis*. Methods Guide for Comparative Effectiveness
+Reviews. AHRQ Publication No. 13-EHC103-EF.
+<https://effectivehealthcare.ahrq.gov/reports/final.cfm>
+
+# Session info
+
+```{r}
+sessionInfo()
+```

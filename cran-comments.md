@@ -1,28 +1,58 @@
 ## Test environments
-- macOS 14, R 4.4.x (local): 0 ERRORs | 0 WARNINGs | 0 NOTEs
-  (occasionally 1 NOTE: "unable to verify current time" on macOS; benign)
-- Win-builder (R-release, R-devel): OK
-- Ubuntu 22.04, R 4.4 (GH Actions): OK
+
+- macOS 14, R 4.3.x (local): 0 ERRORs | 0 WARNINGs | 0 NOTEs
+  (occasionally 1 NOTE: "unable to verify current time" on macOS; benign).
+- Win-builder (R-release, R-devel): planned before submission.
+- Ubuntu 22.04, R 4.4 (GitHub Actions): planned before submission.
 
 ## R CMD check results
-0 errors | 0 warnings | 1 note
 
-* This is a new release.
+0 errors | 0 warnings | 0 notes (after the local environment-related
+notes are filtered out).
 
-## Changes in 1.2.0
-- Redesigned `cv` imputation: robust global median from known SDdiff and
-  feasible-interval estimates; prevents all-NA outcomes.
-- Report writing uses `tempdir()` in non-interactive sessions.
+## metacor 1.3.0 — release notes
 
-metacor 1.2.0
+This is a **minor version** that consolidates the package vocabulary
+without changing any computational behaviour. The release ships:
 
-## R CMD check
+- A new canonical naming scheme. The standard deviation of pre--post
+  change scores is now consistently called `sd_change` (was sometimes
+  `sd_diff` in code, sometimes `SDchange` in documentation). Effect-size
+  identifiers move to snake_case (`smd_pre`, `smd_change`,
+  `smd_pooled`, `smd_diff_groups`). The control-group suffix becomes
+  `_ctrl` (was `_Con`).
+- A flexible column-name matcher that accepts the canonical names, the
+  v1.2.x mixed-case names, and a closed dictionary of synonyms
+  (`baseline_mean`, `treatment`, `placebo`, `m1`/`m2`, `pval`, ...).
+  Set `column_matching = "strict"` to disable.
+- A backward-compatibility layer. Every v1.2.x argument
+  (`method`, `SMD_method`, `MeanDifferences`, `custom_sd_diff_*`),
+  every v1.2.x `effect_size` value (`"SMDpre"`, `"SMDchange"`,
+  `"ScMDpooled"`, `"ScMDpre"`), and every v1.2.x column suffix
+  (`_Con`, `sd_diff_*`) continues to work, with
+  `lifecycle::deprecate_warn()` pointing to the new name. Slated for
+  removal in 2.0.0.
 
-* Local macOS: 0 errors, 0 warnings, 1 note
-  - NOTE: checking for future file timestamps ... unable to verify current time
-    This appears to be a macOS/local clock issue and not related to the package code.
+### Behaviour preservation
 
-## Changes
+The rename was verified to be **bit-for-bit numerically equivalent** to
+1.2.1 across 23 golden-test fixtures covering every effect-size x
+imputation-method combination, against both the published example
+dataset (single-group) and a hand-crafted synthetic two-group dataset.
+No formula changed; only names did.
 
-* Added check_metacor_consistency() to check internal consistency of summary data
-  and optionally provide narrative summaries per study.
+### Reverse dependencies
+
+`metacor` is a leaf package on CRAN: no reverse dependencies. No
+downstream packages are affected by this release.
+
+### Documentation
+
+- New vignette **`metacor-intro`** (replaces `introduccion`).
+- New vignette **`migrating-from-1.2`** documents every renamed
+  argument, value, and column.
+
+## Acknowledgements
+
+Thanks to the CRAN maintainers for the patience this rename took to
+prepare.
