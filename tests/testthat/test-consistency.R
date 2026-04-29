@@ -3,8 +3,8 @@
 test_that("consistency check on single-group output matches golden", {
   sg <- read_fixture("example_single_group.rds")
   base <- metacor_dual(
-    sg, digits = 4, add_to_df = TRUE, method = "both",
-    apply_hedges = TRUE, SMD_method = "SMDpre", MeanDifferences = TRUE,
+    sg, digits = 4, add_to_df = TRUE, derive_from = "both",
+    apply_hedges = TRUE, effect_size = "smd_pre", mean_differences = TRUE,
     impute_method = "cv", verbose = FALSE, report_imputations = FALSE,
     single_group = TRUE
   ) |> suppressWarnings()
@@ -15,8 +15,8 @@ test_that("consistency check on single-group output matches golden", {
 test_that("consistency check on two-group output matches golden", {
   tg <- read_fixture("example_two_group.rds")
   base <- metacor_dual(
-    tg, digits = 4, add_to_df = TRUE, method = "both",
-    apply_hedges = TRUE, SMD_method = "SMDpre", MeanDifferences = TRUE,
+    tg, digits = 4, add_to_df = TRUE, derive_from = "both",
+    apply_hedges = TRUE, effect_size = "smd_pre", mean_differences = TRUE,
     impute_method = "cv", verbose = FALSE, report_imputations = FALSE,
     single_group = FALSE
   ) |> suppressWarnings()

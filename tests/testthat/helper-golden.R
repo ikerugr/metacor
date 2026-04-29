@@ -56,3 +56,17 @@ expect_matches_golden <- function(label, run) {
   testthat::expect_setequal(run$messages, golden$messages)
   testthat::expect_setequal(run$warnings, golden$warnings)
 }
+
+# Run an expression, suppressing only data-related warnings while letting
+# `lifecycle_warning_deprecated` warnings propagate so testthat can match
+# them via `lifecycle::expect_deprecated()`.
+suppress_data_warnings <- function(expr) {
+  withCallingHandlers(
+    expr,
+    warning = function(w) {
+      if (!inherits(w, "lifecycle_warning_deprecated")) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
+}

@@ -2,6 +2,9 @@
 
 export(check_metacor_consistency)
 export(metacor_dual)
+importFrom(lifecycle,deprecate_warn)
+importFrom(lifecycle,deprecated)
+importFrom(lifecycle,is_present)
 importFrom(officer,body_add_fpar)
 importFrom(officer,body_add_par)
 importFrom(officer,fp_text)

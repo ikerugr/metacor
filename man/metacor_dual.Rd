@@ -2,76 +2,117 @@
 % Please edit documentation in R/metacor_dual.R
 \name{metacor_dual}
 \alias{metacor_dual}
-\title{Effect Sizes and Imputation for Meta-Analysis of Pre-Post Studies and Pre-Post intervention and control groups studies (metacor_dual)}
+\title{Effect Sizes and Imputation for Meta-Analysis of Pre-Post Studies}
 \usage{
 metacor_dual(
   df,
   digits = NULL,
   add_to_df = TRUE,
-  method = "both",
+  derive_from = c("both", "p_value", "ci"),
   apply_hedges = TRUE,
-  SMD_method = "SMDpre",
-  MeanDifferences = FALSE,
-  impute_method = "none",
+  effect_size = c("smd_pre", "smd_change", "smd_pooled", "smd_diff_groups"),
+  mean_differences = FALSE,
+  impute_method = c("none", "direct", "mean", "cv"),
   verbose = TRUE,
   report_imputations = FALSE,
-  custom_sd_diff_int = NULL,
-  custom_sd_diff_con = NULL,
-  single_group = FALSE
+  custom_sd_change_int = NULL,
+  custom_sd_change_ctrl = NULL,
+  single_group = FALSE,
+  column_matching = c("flexible", "strict"),
+  method = lifecycle::deprecated(),
+  SMD_method = lifecycle::deprecated(),
+  MeanDifferences = lifecycle::deprecated(),
+  custom_sd_diff_int = lifecycle::deprecated(),
+  custom_sd_diff_con = lifecycle::deprecated()
 )
 }
 \arguments{
-\item{df}{Data frame with the necessary columns for intervention and (optionally) control groups.}
+\item{df}{Data frame with the necessary columns for intervention and
+(optionally) control groups. See \emph{Details} for the canonical schema.}
 
 \item{digits}{Number of decimal places to round results (default: NULL).}
 
 \item{add_to_df}{Logical. If TRUE, results are added to the original data frame.}
 
-\item{method}{Method for SDdiff calculation (i.e., 'p_value', 'ci', 'both').}
+\item{derive_from}{Method for deriving \code{sd_change} when not reported.
+One of \code{"both"} (default), \code{"p_value"}, \code{"ci"}. Was \code{method} in v1.2.x.}
 
 \item{apply_hedges}{Logical. Apply Hedges' g correction? (default: TRUE)}
 
-\item{SMD_method}{Method for effect size (i.e., 'SMDpre', 'SMDchange', 'ScMDpooled', 'ScMDpre').}
+\item{effect_size}{Which effect size to compute. One of \code{"smd_pre"}
+(default), \code{"smd_change"}, \code{"smd_pooled"}, \code{"smd_diff_groups"}. Was
+\code{SMD_method} in v1.2.x with values \code{"SMDpre"}, \code{"SMDchange"},
+\code{"ScMDpooled"}, \code{"ScMDpre"}.}
 
-\item{MeanDifferences}{Logical. Calculate mean differences and variances? (default: FALSE)}
+\item{mean_differences}{Logical. Calculate mean differences and
+variances? (default: FALSE). Was \code{MeanDifferences} in v1.2.x.}
 
-\item{impute_method}{Imputation method for missing SDdiff (i.e., 'none', 'direct', 'mean', 'cv').}
+\item{impute_method}{Imputation method for missing \code{sd_change}. One of
+\code{"none"} (default), \code{"direct"}, \code{"mean"}, \code{"cv"}.}
 
 \item{verbose}{Logical. Print messages during processing? (default: TRUE)}
 
 \item{report_imputations}{Logical. Generate Word imputation report? (default: FALSE)}
 
-\item{custom_sd_diff_int}{List with elements 'row' and 'value' for manual sd_diff_int values.}
+\item{custom_sd_change_int}{List with elements \code{row} and \code{value} for
+manual \code{sd_change} values in the intervention group. Was
+\code{custom_sd_diff_int} in v1.2.x.}
 
-\item{custom_sd_diff_con}{List with elements 'row' and 'value' for manual sd_diff_con values.}
+\item{custom_sd_change_ctrl}{Same for the control group. Was
+\code{custom_sd_diff_con} in v1.2.x.}
 
 \item{single_group}{Logical. Is the design single-group only? (default: FALSE)}
+
+\item{column_matching}{\code{"flexible"} (default) accepts case / separator
+variants and a closed set of synonyms; \code{"strict"} requires the exact
+canonical column names.}
+
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{derive_from}.}
+
+\item{SMD_method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{effect_size}.}
+
+\item{MeanDifferences}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{mean_differences}.}
+
+\item{custom_sd_diff_int}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{custom_sd_change_int}.}
+
+\item{custom_sd_diff_con}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{custom_sd_change_ctrl}.}
 }
 \value{
-Data frame with calculated variables. Optionally, a Word report ('imputation_report.docx') is generated.
+Data frame with calculated variables. Optionally, a Word report
+(\code{imputation_report.docx}) is generated.
 }
 \description{
-Calculates effect sizes (i.e., SMDpre, SMDchange, ScMDpooled, ScMDpre) and allows for various imputation methods (i.e., none, cv, direct, mean)
-for missing SDdiff and correlation coefficients in pre-post meta-analyses, with or without a control group.
+Calculates effect sizes (i.e., \code{smd_pre}, \code{smd_change}, \code{smd_pooled},
+\code{smd_diff_groups}) and allows for various imputation methods (i.e.,
+\code{none}, \code{cv}, \code{direct}, \code{mean}) for missing \code{sd_change} and correlation
+coefficients in pre-post meta-analyses, with or without a control group.
 Generates a detailed imputation report in Word format.
+}
+\details{
+Column names in the input data frame are matched flexibly: legacy
+v1.2.x names (\code{meanPre_Int}, \code{sd_diff_int}, \verb{_Con}, ...) and a closed
+set of common synonyms (\code{baseline_mean}, \code{treatment}, \code{placebo}, ...)
+are accepted alongside the canonical names. Pass
+\code{column_matching = "strict"} to disable this and require canonical
+names exactly.
 }
 \examples{
 df <- data.frame(
-  study_name = c("Study1", "Study2", "Study3", "Study4",
-  "Study5", "Study6", "Study7", "Study8", "Study9"),
-  p_value_Int = c(1.038814e-07, NA, NA, NA, NA, 2.100000e-02, NA, NA, NA),
-  n_Int = c(10, 10, 10, 10, 15, 15, 10, 10, 10),
-  meanPre_Int = c(8.17, 10.09, 10.18, 9.85, 9.51, 7.70, 10.00, 11.53, 11.20),
-  meanPost_Int = c(10.12, 12.50, 12.56, 10.41, 10.88, 9.20, 10.80, 13.42, 12.00),
-  sd_pre_Int = c(1.83, 0.67, 0.66, 0.90, 0.62, 0.90, 0.70, 0.60, 1.90),
-  sd_post_Int = c(1.85, 0.72, 0.97, 0.67, 0.76, 1.10, 0.70, 0.80, 1.80),
-  upperCI_Int = c(NA, NA, NA, NA, NA, NA, NA, NA, NA),
-  lowerCI_Int = c(NA, NA, NA, NA, NA, NA, NA, NA, NA)
+  study_name   = c("Study1", "Study2", "Study3", "Study4"),
+  p_value_int  = c(1.04e-07, NA, NA, NA),
+  n_int        = c(10, 10, 10, 10),
+  mean_pre_int = c(8.17, 10.09, 10.18, 9.85),
+  mean_post_int= c(10.12, 12.50, 12.56, 10.41),
+  sd_pre_int   = c(1.83, 0.67, 0.66, 0.90),
+  sd_post_int  = c(1.85, 0.72, 0.97, 0.67),
+  upper_ci_int = c(NA, NA, NA, NA),
+  lower_ci_int = c(NA, NA, NA, NA)
 )
-result <- metacor_dual(df)
+result <- metacor_dual(df, single_group = TRUE)
 print(result)
 }
 \references{
 Higgins, J. P. T., Thomas, J., Chandler, J., Cumpston, M., Li, T., Page, M. J., & Welch, V. A. (Eds.). (2023). Cochrane handbook for systematic reviews of interventions (Version 6.3). Cochrane. https://training.cochrane.org/handbook
+
 Fu, R., Vandermeer, B.W., Shamliyan, T.A., ONeil, M.E., Yazdi, F., Fox, S.H., & Morton, S.C. (2013). Handling Continuous Outcomes in Quantitative Synthesis. Methods Guide for Comparative Effectiveness Reviews. AHRQ Publication No. 13-EHC103-EF. https://effectivehealthcare.ahrq.gov/reports/final.cfm
 }

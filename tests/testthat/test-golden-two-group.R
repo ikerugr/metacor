@@ -1,20 +1,20 @@
 # Golden tests — two-group (intervention + control) designs
 #
 # Uses the synthetic two-group fixture (see tests/testthat/_data/README.md).
-# Locks down metacor_dual() output for every effect-size x {none, cv}
+# Locks down metacor_dual() output for every effect_size x {none, cv}
 # imputation combination, plus a custom-imputation case.
 
 tg <- read_fixture("example_two_group.rds")
 
 base_args <- list(
-  digits          = 4,
-  add_to_df       = TRUE,
-  method          = "both",
-  apply_hedges    = TRUE,
-  MeanDifferences = TRUE,
-  verbose         = FALSE,
+  digits             = 4,
+  add_to_df          = TRUE,
+  derive_from        = "both",
+  apply_hedges       = TRUE,
+  mean_differences   = TRUE,
+  verbose            = FALSE,
   report_imputations = FALSE,
-  single_group    = FALSE
+  single_group       = FALSE
 )
 
 run_with <- function(...) {
@@ -23,24 +23,24 @@ run_with <- function(...) {
   do.call(run_capturing, args)
 }
 
-test_that("two-group SMDpre / SMDchange / ScMDpooled / ScMDpre x {none, cv} match golden", {
-  for (es in c("SMDpre", "SMDchange", "ScMDpooled", "ScMDpre")) {
+test_that("two-group {smd_pre, smd_change, smd_pooled, smd_diff_groups} x {none, cv} match golden", {
+  for (es in c("smd_pre", "smd_change", "smd_pooled", "smd_diff_groups")) {
     for (im in c("none", "cv")) {
-      label <- sprintf("tg_%s_%s", tolower(es), im)
+      label <- sprintf("tg_%s_%s", es, im)
       expect_matches_golden(label,
-        run_with(SMD_method = es, impute_method = im))
+        run_with(effect_size = es, impute_method = im))
     }
   }
 })
 
-test_that("two-group custom sd_diff in both groups matches golden", {
+test_that("two-group custom sd_change in both groups matches golden", {
   expect_matches_golden(
-    "tg_smdchange_custom_both",
-    run_with(SMD_method = "SMDchange", impute_method = "none",
-             MeanDifferences = FALSE,
-             custom_sd_diff_int = list(list(row = 3, value = 0.6),
-                                       list(row = 6, value = 5.0)),
-             custom_sd_diff_con = list(list(row = 3, value = 0.5),
-                                       list(row = 6, value = 4.5)))
+    "tg_smd_change_custom_both",
+    run_with(effect_size = "smd_change", impute_method = "none",
+             mean_differences = FALSE,
+             custom_sd_change_int = list(list(row = 3, value = 0.6),
+                                         list(row = 6, value = 5.0)),
+             custom_sd_change_ctrl = list(list(row = 3, value = 0.5),
+                                          list(row = 6, value = 4.5)))
   )
 })

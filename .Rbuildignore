@@ -16,3 +16,6 @@
 ^cran-comments\.md$
 ^tools$
 ^naming_decisions\.md$
+^\.claude$
+^metacor\.Rcheck$
+^metacor_.*\.tar\.gz$

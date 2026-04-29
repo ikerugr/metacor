@@ -25,25 +25,27 @@ reported and reconstructed confidence interval limits.}
 value) are flagged as extreme.}
 
 \item{interpret}{Logical. If \code{TRUE}, add character columns
-\code{summary_int} (and \code{summary_con}, if applicable) with a
+\code{summary_int} (and \code{summary_ctrl}, if applicable) with a
 brief narrative interpretation of the flags for each study.}
 }
 \value{
 The same data frame \code{df} with additional logical flag columns
-(e.g., \code{flag_p_mismatch_int}, \code{flag_CI_mismatch_int}, etc.),
-and, if \code{interpret = TRUE}, one or two character columns with
-textual summaries.
+(e.g., \code{flag_p_mismatch_int}, \code{flag_CI_mismatch_int},
+\code{flag_sd_change_out_of_range_int}, \code{flag_r_extreme_int}, and
+their \verb{_ctrl} counterparts when applicable), and, if
+\code{interpret = TRUE}, one or two character columns with textual
+summaries.
 }
 \description{
 This function takes the output of \code{metacor_dual()} and performs
 a set of internal consistency checks (p-values, confidence intervals,
-SD of the difference vs. feasible range, and extreme correlations).
+SD of change scores vs. feasible range, and extreme correlations).
 Optionally, it also adds a human-readable interpretation of the
 detected issues for each study.
 }
 \examples{
 \dontrun{
-  res <- metacor_dual(dat, MeanDifferences = TRUE)
+  res <- metacor_dual(dat, mean_differences = TRUE)
   res_checked <- check_metacor_consistency(res, interpret = TRUE)
 }
 }

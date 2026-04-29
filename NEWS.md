@@ -1,6 +1,6 @@
-# metacor (development version)
+# metacor 1.3.0
 
-## Major changes (planned for 1.3.0)
+## Major changes
 
 - **Naming overhaul.** Adopts a single canonical vocabulary across the entire
   package, paper, and documentation. The standard deviation of pre–post

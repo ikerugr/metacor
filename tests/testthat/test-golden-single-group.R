@@ -1,26 +1,26 @@
 # Golden tests — single-group designs
 #
 # Locks down metacor_dual() output for the canonical example dataset
-# (paper/metacor analysis Paper/Example Metacor Paper.xlsx, sheet "Sheet1 (2)")
-# under every (effect_size x impute_method) combination and a few extras.
+# (paper/metacor analysis Paper/Example Metacor Paper.xlsx, sheet "Sheet1 (2)",
+# renamed to v1.3 canonical schema) under every (effect_size x impute_method)
+# combination and a few extras.
 #
-# These tests are the safety net for the v1.2.1 -> v1.3.0 rename. If a test
-# fails after a refactor, either the change was unintended (fix the code)
-# or the change was deliberate (regenerate fixtures via
+# These tests are the regression net for any future change to metacor_dual().
+# If a test fails, either the change was unintended (fix the code) or the
+# change was deliberate (regenerate fixtures via
 # tools/build_golden_fixtures.R, document in NEWS.md).
 
 sg <- read_fixture("example_single_group.rds")
 
 base_args <- list(
-  df              = quote(sg),
-  digits          = 3,
-  add_to_df       = TRUE,
-  method          = "both",
-  apply_hedges    = TRUE,
-  MeanDifferences = FALSE,
-  verbose         = TRUE,
+  digits             = 3,
+  add_to_df          = TRUE,
+  derive_from        = "both",
+  apply_hedges       = TRUE,
+  mean_differences   = FALSE,
+  verbose            = TRUE,
   report_imputations = FALSE,
-  single_group    = TRUE
+  single_group       = TRUE
 )
 
 run_with <- function(...) {
@@ -29,50 +29,50 @@ run_with <- function(...) {
   do.call(run_capturing, args)
 }
 
-test_that("single-group SMDpre x impute_method grid matches golden", {
+test_that("single-group smd_pre x impute_method grid matches golden", {
   for (im in c("none", "direct", "mean", "cv")) {
-    label <- sprintf("sg_smdpre_%s", im)
+    label <- sprintf("sg_smd_pre_%s", im)
     expect_matches_golden(label,
-      run_with(SMD_method = "SMDpre", impute_method = im))
+      run_with(effect_size = "smd_pre", impute_method = im))
   }
 })
 
-test_that("single-group SMDchange x impute_method grid matches golden", {
+test_that("single-group smd_change x impute_method grid matches golden", {
   for (im in c("none", "direct", "mean", "cv")) {
-    label <- sprintf("sg_smdchange_%s", im)
+    label <- sprintf("sg_smd_change_%s", im)
     expect_matches_golden(label,
-      run_with(SMD_method = "SMDchange", impute_method = im))
+      run_with(effect_size = "smd_change", impute_method = im))
   }
 })
 
-test_that("single-group custom sd_diff_int + cv matches golden", {
+test_that("single-group custom sd_change_int + cv matches golden", {
   expect_matches_golden(
-    "sg_smdpre_cv_custom",
-    run_with(SMD_method = "SMDpre", impute_method = "cv",
-             custom_sd_diff_int = list(list(row = 7, value = 0.5)))
+    "sg_smd_pre_cv_custom",
+    run_with(effect_size = "smd_pre", impute_method = "cv",
+             custom_sd_change_int = list(list(row = 7, value = 0.5)))
   )
 })
 
-test_that("single-group SMDchange + MeanDifferences=TRUE + cv matches golden", {
+test_that("single-group smd_change + mean_differences=TRUE + cv matches golden", {
   expect_matches_golden(
-    "sg_smdchange_cv_meandiffs",
-    run_with(SMD_method = "SMDchange", impute_method = "cv",
-             MeanDifferences = TRUE)
+    "sg_smd_change_cv_meandiffs",
+    run_with(effect_size = "smd_change", impute_method = "cv",
+             mean_differences = TRUE)
   )
 })
 
 test_that("single-group digits=NULL preserves full precision (golden)", {
   expect_matches_golden(
-    "sg_smdpre_cv_no_round",
-    run_with(SMD_method = "SMDpre", impute_method = "cv",
+    "sg_smd_pre_cv_no_round",
+    run_with(effect_size = "smd_pre", impute_method = "cv",
              digits = NULL, verbose = FALSE)
   )
 })
 
 test_that("single-group apply_hedges=FALSE matches golden", {
   expect_matches_golden(
-    "sg_smdpre_cv_no_hedges",
-    run_with(SMD_method = "SMDpre", impute_method = "cv",
+    "sg_smd_pre_cv_no_hedges",
+    run_with(effect_size = "smd_pre", impute_method = "cv",
              apply_hedges = FALSE, verbose = FALSE)
   )
 })
